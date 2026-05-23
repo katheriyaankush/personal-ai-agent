@@ -92,7 +92,8 @@ body {
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 .contact-btn, .resume-btn {
-  display: flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 7px; border-radius: 6px;
   font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit;
   text-decoration: none; border: none; white-space: nowrap; transition: opacity 0.2s;
 }
@@ -100,6 +101,14 @@ body {
 .resume-btn { background: var(--bg-input); color: var(--primary-light); border: 1px solid var(--border-light); }
 .contact-btn:hover, .resume-btn:hover { opacity: 0.85; }
 .contact-btn svg, .resume-btn svg { flex-shrink: 0; }
+
+/* Hide button labels on small screens — icon only */
+.btn-label { display: none; }
+
+@media (min-width: 480px) {
+  .btn-label { display: inline; }
+  .contact-btn, .resume-btn { padding: 6px 12px; gap: 5px; }
+}
 
 /* ===== TABS ===== */
 .tabs {
