@@ -155,7 +155,7 @@ export default function Home() {
       <Head>
         <title>Ankush Katharia | AI Portfolio Assistant</title>
         <meta name="description" content="Interactive AI-powered portfolio assistant for Ankush Katharia - Full Stack Architect Manager with 10+ years of experience" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <link rel="icon" href="/favicon.ico" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </Head>
@@ -208,7 +208,7 @@ export default function Home() {
                     <span className="contact-value">katheriyaankush@gmail.com</span>
                   </div>
                 </a>
-                <a href="https://www.linkedin.com/in/ankushkatharia-738036b1" target="_blank" rel="noopener noreferrer" className="contact-item">
+                <a href="https://www.linkedin.com/in/ankush-katharia-738036b1/" target="_blank" rel="noopener noreferrer" className="contact-item">
                   <div className="contact-icon linkedin-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
@@ -467,7 +467,7 @@ export default function Home() {
             Built with Next.js &amp; AI by Ankush Katharia •{" "}
             <button className="footer-link" onClick={() => setShowContact(true)}>Contact</button>
             {" "}•{" "}
-            <a href="https://www.linkedin.com/in/ankushkatharia-738036b1" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="https://www.linkedin.com/in/ankush-katharia-738036b1/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
             {" "}•{" "}
             <a href="/Ankush-Katharia-Resume.pdf" download>Download Resume</a>
           </p>

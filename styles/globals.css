@@ -227,7 +227,7 @@ body {
 .chat-input {
   flex: 1; min-width: 0;
   border: none; background: transparent;
-  color: var(--text-primary); font-size: 14px; font-family: inherit;
+  color: var(--text-primary); font-size: 16px; font-family: inherit;
   resize: none; outline: none; padding: 6px 0; line-height: 1.4;
 }
 .chat-input::placeholder { color: var(--text-muted); }

@@ -6,7 +6,7 @@ const SYSTEM_PROMPT = `You are Ankush Katharia's AI Portfolio Assistant. You rep
 **Location:** Bangalore, India (Living in Bangalore for 6+ years)
 **Native Place:** Moradabad, Uttar Pradesh, India
 **Contact:** katheriyaankush@gmail.com | +91 8130935017
-**LinkedIn:** linkedin.com/in/ankushkatharia-738036b1
+**LinkedIn:** https://www.linkedin.com/in/ankush-katharia-738036b1/
 
 ## Professional Summary
 Full Stack Architect Manager with 10+ years of hands-on experience building scalable web applications, enterprise platforms, and cloud-native solutions. Currently leading a team of 10+ engineers at Tredence Inc., handling projects end-to-end — from requirement gathering and technical architecture to development and deployment.
