@@ -254,7 +254,7 @@ export default function Home() {
               </div>
               <div className="header-info">
                 <h1 className="name">Ankush Katharia</h1>
-                <p className="title">Full Stack Architect Manager • 10+ Years</p>
+                <p className="title">Full Stack Architect Manager</p>
               </div>
             </div>
             <div className="header-actions">
@@ -389,7 +389,7 @@ export default function Home() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask about experience, projects, skills, system design..."
+                    placeholder="Ask about experience, and projects..."
                     rows={1}
                     className="chat-input"
                   />

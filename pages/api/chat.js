@@ -162,6 +162,8 @@ export default async function handler(req, res) {
 
   const { message, history = [] } = req.body;
 
+  console.log(`[Chat] Incoming request — message: "${message?.slice(0, 60)}${message?.length > 60 ? '...' : ''}", history length: ${history.length}`);
+
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
@@ -199,6 +201,7 @@ export default async function handler(req, res) {
     ];
 
     // Use streamGenerateContent endpoint for streaming
+    console.log('[Chat] Calling Gemini API — model: gemini-flash-latest, contents count:', contents.length);
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse`,
       {
@@ -221,8 +224,12 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error:', errorText);
-      res.write(`data: ${JSON.stringify({ error: 'Failed to get response from AI' })}\n\n`);
+      console.error('=== Gemini API Error ===');
+      console.error('Status:', response.status, response.statusText);
+      console.error('Model: gemini-flash-latest');
+      console.error('Response body:', errorText);
+      console.error('=======================');
+      res.write(`data: ${JSON.stringify({ error: `Gemini API error ${response.status}: ${response.statusText}` })}\n\n`);
       res.write('data: [DONE]\n\n');
       res.end();
       return;
@@ -254,7 +261,7 @@ export default async function handler(req, res) {
               res.write(`data: ${JSON.stringify({ text })}\n\n`);
             }
           } catch (e) {
-            // Skip malformed JSON chunks
+            console.warn('Failed to parse SSE chunk:', line, e.message);
           }
         }
       }
@@ -271,7 +278,7 @@ export default async function handler(req, res) {
             res.write(`data: ${JSON.stringify({ text })}\n\n`);
           }
         } catch (e) {
-          // Skip
+          console.warn('Failed to parse remaining buffer chunk:', buffer, e.message);
         }
       }
     }
@@ -279,7 +286,10 @@ export default async function handler(req, res) {
     res.write('data: [DONE]\n\n');
     res.end();
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error('=== Chat Handler Error ===');
+    console.error('Message:', error.message);
+    console.error('Stack:', error.stack);
+    console.error('=========================');
     res.write(`data: ${JSON.stringify({ error: 'Internal server error' })}\n\n`);
     res.write('data: [DONE]\n\n');
     res.end();
