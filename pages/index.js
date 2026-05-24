@@ -42,6 +42,13 @@ export default function Home() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [showContact, setShowContact] = useState(false);
   const [streamingText, setStreamingText] = useState("");
+
+  // Login gate state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginForm, setLoginForm] = useState({ name: "", email: "", phone: "" });
+  const [loginError, setLoginError] = useState("");
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -61,8 +68,37 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  const sendMessage = useCallback(async (text) => {
-    const messageText = text || input.trim();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoginError("");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!loginForm.email.trim()) {
+      setLoginError("Email address is required.");
+      return;
+    }
+    if (!emailRegex.test(loginForm.email.trim())) {
+      setLoginError("Please enter a valid email address.");
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: loginForm.name.trim(),
+          email: loginForm.email.trim(),
+          phone: loginForm.phone.trim(),
+        }),
+      });
+    } catch (_) {
+      // Don't block login on network error
+    }
+    setLoginLoading(false);
+    setIsLoggedIn(true);
+  };
+
+  const sendMessage = useCallback(async (text) => {    const messageText = text || input.trim();
     if (!messageText || isLoading) return;
 
     setShowWelcome(false);
@@ -77,7 +113,12 @@ export default function Home() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: messageText, history }),
+        body: JSON.stringify({
+          message: messageText,
+          history,
+          visitorEmail: loginForm.email,
+          visitorPhone: loginForm.phone,
+        }),
       });
 
       if (!response.ok) {
@@ -169,6 +210,83 @@ export default function Home() {
           <div className="floating-orb orb-2"></div>
           <div className="floating-orb orb-3"></div>
         </div>
+
+        {/* Login Gate */}
+        {!isLoggedIn && (
+          <div className="login-overlay">
+            <div className="login-card">
+              <div className="login-profile">
+                <Image src="/profile.jpeg" alt="Ankush Katharia" width={72} height={72} className="login-avatar" />
+                <h1 className="login-name">Ankush Katharia</h1>
+                <p className="login-role">Full Stack Architect Manager • 10+ Years</p>
+                <div className="login-badges">
+                  <span className="login-badge">React 8yr</span>
+                  <span className="login-badge">Node 8yr</span>
+                  <span className="login-badge">GenAI 2yr</span>
+                  <span className="login-badge">AWS 4yr</span>
+                </div>
+              </div>
+
+              <div className="login-divider">
+                <span>Enter your details to start chatting</span>
+              </div>
+
+              <form className="login-form" onSubmit={handleLogin} noValidate>
+                <div className="login-field">
+                  <label className="login-label">Name <span className="optional">(optional)</span></label>
+                  <input
+                    type="text"
+                    className="login-input"
+                    placeholder="Your name"
+                    value={loginForm.name}
+                    onChange={(e) => setLoginForm(f => ({ ...f, name: e.target.value }))}
+                    autoComplete="name"
+                  />
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Email <span className="required">*</span></label>
+                  <input
+                    type="email"
+                    className={`login-input ${loginError ? "input-error" : ""}`}
+                    placeholder="your@email.com"
+                    value={loginForm.email}
+                    onChange={(e) => { setLoginForm(f => ({ ...f, email: e.target.value })); setLoginError(""); }}
+                    autoComplete="email"
+                    required
+                  />
+                  {loginError && <p className="login-error">{loginError}</p>}
+                </div>
+                <div className="login-field">
+                  <label className="login-label">Phone <span className="optional">(optional)</span></label>
+                  <input
+                    type="tel"
+                    className="login-input"
+                    placeholder="+91 98765 43210"
+                    value={loginForm.phone}
+                    onChange={(e) => setLoginForm(f => ({ ...f, phone: e.target.value }))}
+                    autoComplete="tel"
+                  />
+                </div>
+                <button type="submit" className="login-btn" disabled={loginLoading}>
+                  {loginLoading ? (
+                    <span className="login-spinner"></span>
+                  ) : (
+                    <>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      Start Chatting
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <p className="login-note">
+                Your details help Ankush know who visited his portfolio. No spam, ever.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Contact Modal */}
         {showContact && (
@@ -385,7 +503,7 @@ export default function Home() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Ask about experience, and projects..."
+                    placeholder="Ask about experience.."
                     rows={1}
                     className="chat-input"
                   />

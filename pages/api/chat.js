@@ -148,19 +148,95 @@ If someone asks system design or architecture questions, engage thoughtfully and
 - Always be professional, concise, and accurate
 - Highlight relevant experience based on the question context
 - Use specific numbers and metrics when available (team size, performance improvements, years of experience)
-- If asked about something not in Ankush's background, politely say you don't have that information but encourage them to reach out directly
+- **If asked about ANYTHING you don't know or that is outside Ankush's professional background, ALWAYS call the record_unknown_question tool — never say "I don't know" without calling it first**
+- After calling the tool, tell the user: "I've forwarded your question to Ankush along with your contact details. He'll personally get back to you soon! 📧"
 - Show enthusiasm about Ankush's work and capabilities
 - Keep responses focused and to the point (2-4 paragraphs max unless detailed explanation needed)
 - When discussing skills, mention years of experience to add credibility
 - Always position Ankush as a senior leader who can both architect and execute
 `;
 
+// Tool definition for recording unknown questions
+const TOOLS = [
+  {
+    functionDeclarations: [
+      {
+        name: 'record_unknown_question',
+        description: "Always use this tool to record any question that couldn't be answered because you didn't know the answer. Use it for anything outside Ankush's professional background.",
+        parameters: {
+          type: 'object',
+          properties: {
+            question: {
+              type: 'string',
+              description: 'The question that could not be answered',
+            },
+          },
+          required: ['question'],
+        },
+      },
+    ],
+  },
+];
+
+// Send email notification for unknown question
+async function sendUnknownQuestionEmail(question, visitorEmail, visitorPhone) {
+  const resendKey = process.env.RESEND_API_KEY;
+  if (!resendKey) {
+    console.warn('[Tool] RESEND_API_KEY not set — skipping email');
+    return;
+  }
+  const { Resend } = await import('resend');
+  const resend = new Resend(resendKey);
+  const now = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+  try {
+    await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: 'desiankush143@gmail.com',
+      subject: `❓ Unanswered question from your AI Portfolio`,
+      html: `
+        <div style="font-family: Inter, Arial, sans-serif; max-width: 520px; margin: 0 auto; background: #0f0f0f; color: #fafafa; border-radius: 12px; overflow: hidden; border: 1px solid #2a2a2a;">
+          <div style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 24px 28px;">
+            <h1 style="margin: 0; font-size: 20px; color: white;">❓ Unanswered Question</h1>
+            <p style="margin: 6px 0 0; color: rgba(255,255,255,0.85); font-size: 13px;">Your AI Portfolio couldn't answer this — follow up needed</p>
+          </div>
+          <div style="padding: 24px 28px;">
+            <div style="background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+              <p style="margin: 0; font-size: 15px; color: #fafafa; line-height: 1.6;">"${question}"</p>
+            </div>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #2a2a2a; color: #737373; font-size: 11px; text-transform: uppercase; width: 100px;">Visitor Email</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #2a2a2a; color: #34d399; font-size: 13px;">${visitorEmail || 'Not provided'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #2a2a2a; color: #737373; font-size: 11px; text-transform: uppercase;">Phone</td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #2a2a2a; color: #fafafa; font-size: 13px;">${visitorPhone || 'Not provided'}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; color: #737373; font-size: 11px; text-transform: uppercase;">Time (IST)</td>
+                <td style="padding: 8px 0; color: #fafafa; font-size: 13px;">${now}</td>
+              </tr>
+            </table>
+          </div>
+          <div style="padding: 14px 28px; border-top: 1px solid #2a2a2a; text-align: center;">
+            <p style="margin: 0; font-size: 11px; color: #737373;">Ankush Katharia • AI Portfolio Assistant</p>
+          </div>
+        </div>
+      `,
+    });
+    console.log(`[Tool] Unknown question email sent for: "${question.slice(0, 60)}"`);
+  } catch (err) {
+    console.error('[Tool] Failed to send unknown question email:', err.message);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { message, history = [] } = req.body;
+  const { message, history = [], visitorEmail, visitorPhone } = req.body;
 
   console.log(`[Chat] Incoming request — message: "${message?.slice(0, 60)}${message?.length > 60 ? '...' : ''}", history length: ${history.length}`);
 
@@ -169,7 +245,6 @@ export default async function handler(req, res) {
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
-
   if (!apiKey) {
     return res.status(500).json({ error: 'API key not configured. Please set GEMINI_API_KEY in .env.local' });
   }
@@ -180,111 +255,117 @@ export default async function handler(req, res) {
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('X-Accel-Buffering', 'no');
 
-  try {
-    const contents = [
-      {
-        role: 'user',
-        parts: [{ text: SYSTEM_PROMPT }]
-      },
-      {
-        role: 'model',
-        parts: [{ text: 'I understand. I am Ankush Katharia\'s AI Portfolio Assistant. I will answer questions about his experience, skills, projects, and background accurately and professionally. I\'ll highlight his 10+ years of expertise, leadership capabilities, and cutting-edge AI skills. How can I help you learn more about Ankush?' }]
-      },
-      ...history.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
-      })),
-      {
-        role: 'user',
-        parts: [{ text: message }]
-      }
-    ];
+  const contents = [
+    { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
+    { role: 'model', parts: [{ text: "I understand. I am Ankush Katharia's AI Portfolio Assistant. If I cannot answer a question, I will use the record_unknown_question tool so Ankush can follow up personally. How can I help you?" }] },
+    ...history.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
+    })),
+    { role: 'user', parts: [{ text: message }] },
+  ];
 
-    // Use streamGenerateContent endpoint for streaming
-    console.log('[Chat] Calling Gemini API — model: gemini-flash-latest, contents count:', contents.length);
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse`,
+  const generationConfig = { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 2048 };
+
+  try {
+    // ── Phase 1: Non-streaming call with tools to detect function calls ──
+    console.log('[Chat] Phase 1 — checking for tool calls');
+    const phase1Res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-goog-api-key': apiKey,
-        },
-        body: JSON.stringify({
-          contents,
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 2048,
-          },
-        }),
+        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+        body: JSON.stringify({ contents, tools: TOOLS, generationConfig }),
       }
     );
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('=== Gemini API Error ===');
-      console.error('Status:', response.status, response.statusText);
-      console.error('Model: gemini-flash-latest');
-      console.error('Response body:', errorText);
-      console.error('=======================');
-      res.write(`data: ${JSON.stringify({ error: `Gemini API error ${response.status}: ${response.statusText}` })}\n\n`);
+    if (!phase1Res.ok) {
+      const errText = await phase1Res.text();
+      console.error('=== Gemini Phase 1 Error ===', phase1Res.status, errText);
+      res.write(`data: ${JSON.stringify({ error: `Gemini API error ${phase1Res.status}` })}\n\n`);
       res.write('data: [DONE]\n\n');
       res.end();
       return;
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
+    const phase1Data = await phase1Res.json();
+    const candidate = phase1Data.candidates?.[0];
+    const parts = candidate?.content?.parts || [];
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+    // Check if Gemini wants to call our tool
+    const functionCallPart = parts.find(p => p.functionCall);
 
-      buffer += decoder.decode(value, { stream: true });
+    if (functionCallPart) {
+      const { name, args } = functionCallPart.functionCall;
+      console.log(`[Chat] Tool call detected: ${name}`, args);
 
-      // Process complete SSE events from buffer
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || ''; // Keep incomplete line in buffer
+      if (name === 'record_unknown_question') {
+        // Fire email in background — don't await to keep response fast
+        sendUnknownQuestionEmail(args.question, visitorEmail, visitorPhone);
 
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6).trim();
-          if (!data) continue;
+        // ── Phase 2: Send tool result back and get final response (streaming) ──
+        const contentsWithTool = [
+          ...contents,
+          { role: 'model', parts: [{ functionCall: { name, args } }] },
+          {
+            role: 'user',
+            parts: [{
+              functionResponse: {
+                name,
+                response: { recorded: true, message: 'Question recorded and email sent to Ankush.' },
+              },
+            }],
+          },
+        ];
 
-          try {
-            const parsed = JSON.parse(data);
-            const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (text) {
-              res.write(`data: ${JSON.stringify({ text })}\n\n`);
-            }
-          } catch (e) {
-            console.warn('Failed to parse SSE chunk:', line, e.message);
+        console.log('[Chat] Phase 2 — streaming final response after tool call');
+        const phase2Res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+            body: JSON.stringify({ contents: contentsWithTool, generationConfig }),
           }
+        );
+
+        if (!phase2Res.ok) {
+          const errText = await phase2Res.text();
+          console.error('=== Gemini Phase 2 Error ===', phase2Res.status, errText);
+          // Fallback friendly message
+          const visitorContact = visitorEmail ? `at **${visitorEmail}**` : 'with your contact details';
+          res.write(`data: ${JSON.stringify({ text: `I don't have that information in my knowledge base, but I've forwarded your **question** and **contact** details to Ankush at **katheriyaankush@gmail.com**. He'll get back to you soon! 📧` })}\n\n`);
+          res.write('data: [DONE]\n\n');
+          res.end();
+          return;
         }
+
+        await streamResponse(phase2Res, res);
+        return;
       }
     }
 
-    // Process any remaining buffer
-    if (buffer.startsWith('data: ')) {
-      const data = buffer.slice(6).trim();
-      if (data) {
-        try {
-          const parsed = JSON.parse(data);
-          const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            res.write(`data: ${JSON.stringify({ text })}\n\n`);
-          }
-        } catch (e) {
-          console.warn('Failed to parse remaining buffer chunk:', buffer, e.message);
-        }
+    // ── No tool call — stream the direct answer ──
+    console.log('[Chat] No tool call — streaming direct answer');
+    const streamRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:streamGenerateContent?alt=sse`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-goog-api-key': apiKey },
+        body: JSON.stringify({ contents, tools: TOOLS, generationConfig }),
       }
+    );
+
+    if (!streamRes.ok) {
+      const errText = await streamRes.text();
+      console.error('=== Gemini Stream Error ===', streamRes.status, errText);
+      res.write(`data: ${JSON.stringify({ error: `Gemini API error ${streamRes.status}` })}\n\n`);
+      res.write('data: [DONE]\n\n');
+      res.end();
+      return;
     }
 
-    res.write('data: [DONE]\n\n');
-    res.end();
+    await streamResponse(streamRes, res);
+
   } catch (error) {
     console.error('=== Chat Handler Error ===');
     console.error('Message:', error.message);
@@ -294,4 +375,49 @@ export default async function handler(req, res) {
     res.write('data: [DONE]\n\n');
     res.end();
   }
+}
+
+// Helper: pipe a Gemini SSE stream to the client
+async function streamResponse(geminiRes, res) {
+  const reader = geminiRes.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const data = line.slice(6).trim();
+        if (!data) continue;
+        try {
+          const parsed = JSON.parse(data);
+          const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (text) res.write(`data: ${JSON.stringify({ text })}\n\n`);
+        } catch (e) {
+          console.warn('[Stream] Failed to parse chunk:', e.message);
+        }
+      }
+    }
+  }
+
+  // Flush remaining buffer
+  if (buffer.startsWith('data: ')) {
+    const data = buffer.slice(6).trim();
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) res.write(`data: ${JSON.stringify({ text })}\n\n`);
+      } catch (e) { /* ignore */ }
+    }
+  }
+
+  res.write('data: [DONE]\n\n');
+  res.end();
 }
