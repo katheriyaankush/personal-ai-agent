@@ -20,7 +20,7 @@ const CHUNKS_PATH = resolve(__dirname, '../data/chunks.json');
 const OUTPUT_PATH = resolve(__dirname, '../data/embeddings.json');
 
 // Your Gemini API key — reads from .env.local or pass as env var
-const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyD_-sAPi7KrOVzVLfNYHiqUi1MqIXng1lM';
+const API_KEY = process.env.GEMINI_API_KEY;
 
 /**
  * Call Gemini Embedding API for a single text
