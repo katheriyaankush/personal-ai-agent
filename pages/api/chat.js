@@ -1,17 +1,35 @@
 import { retrieveContext } from '../../lib/rag.js';
 
+// Base context — always sent with every request (key facts the LLM always needs)
+const BASE_CONTEXT = `## Key Facts About Ankush Katharia
+- **Current Company:** Tredence Inc. (January 2025 - Present) — Architect Fullstack Manager
+- **Previous:** HCL Tech (2020-2025), Ola Cabs (2020), Flipkart (2019-2020), Swiggy (2019), Ameyo/Exotel (2015-2019)
+- **Location:** Bangalore, India (6+ years), Native: Moradabad, UP
+- **Experience:** 10+ years total
+- **Strongest Skills:** React.js (8yr), Node.js (8yr), JavaScript/TypeScript (10yr), Databases (8yr), AWS (4yr), GenAI/RAG (2yr), Team Leadership (5yr)
+- **Team:** Currently leading 10+ engineers
+- **Contact:** katheriyaankush@gmail.com | +91 8130935017
+- **Education:** MCA from A.K.G. Engineering College (2012-15), BCA from T.M. University (2009-12)
+- **Key Projects:** ReefChat (AI assistant for EA Sports), BDD Forge (AI test generation), BlueJeans Video SDK, Uber Delivery App, Flipkart IVR, Ameyo CRM
+- **Domains:** E-commerce, Telephony, Video Collaboration, AI/ML, Customer Experience`;
+
 const SYSTEM_PROMPT = `You are Ankush Katharia's AI Portfolio Assistant. You represent Ankush in a professional, friendly, and impressive manner.
 
-IMPORTANT: You will be given CONTEXT retrieved from Ankush's knowledge base. Answer questions ONLY based on the provided context. If the context doesn't contain enough information to answer, use the record_unknown_question tool.
+You have two sources of information:
+1. BASE CONTEXT — Key facts always available (current company, skills summary, career timeline)
+2. RETRIEVED CONTEXT — Detailed chunks retrieved via RAG based on the user's question
+
+Use BOTH to answer. The base context ensures you always know basic facts. The retrieved context gives you detailed information for specific questions.
 
 ## Rules
-- Answer based on the provided context
+- Answer based on the provided context (base + retrieved)
 - Be professional, concise, and accurate
 - Highlight relevant experience with specific numbers and metrics
-- If asked about something not in the context, ALWAYS call record_unknown_question tool
+- If the question is about something NOT covered in either context, ALWAYS call record_unknown_question tool
 - After calling the tool, tell the user: "I've forwarded your question to Ankush along with your contact details. He'll personally get back to you soon! 📧"
 - Keep responses focused (2-4 paragraphs max unless detailed explanation needed)
 - Position Ankush as a senior leader who can both architect and execute
+- When someone says "my", "his", "your" — they mean Ankush Katharia
 `;
 
 // Tool definition for recording unknown questions
@@ -114,8 +132,8 @@ export default async function handler(req, res) {
   res.setHeader('X-Accel-Buffering', 'no');
 
   const contents = [
-    { role: 'user', parts: [{ text: SYSTEM_PROMPT }] },
-    { role: 'model', parts: [{ text: "I understand. I am Ankush Katharia's AI Portfolio Assistant powered by RAG. I will retrieve relevant context from the knowledge base to answer questions. If I cannot find the answer, I will use the record_unknown_question tool. How can I help you?" }] },
+    { role: 'user', parts: [{ text: SYSTEM_PROMPT + '\n\n' + BASE_CONTEXT }] },
+    { role: 'model', parts: [{ text: "I understand. I am Ankush Katharia's AI Portfolio Assistant. I have his key facts loaded and will retrieve detailed context via RAG for each question. If I cannot find the answer, I will use the record_unknown_question tool. How can I help you?" }] },
     ...history.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
@@ -125,15 +143,15 @@ export default async function handler(req, res) {
   // ── RAG: Retrieve relevant context for the user's question ──
   let ragContext = '';
   try {
-    ragContext = await retrieveContext(message, apiKey, 4);
+    ragContext = await retrieveContext(message, apiKey, 5);
     console.log('[RAG] Context retrieved successfully');
   } catch (ragErr) {
     console.error('[RAG] Failed to retrieve context:', ragErr.message);
-    ragContext = 'No context available — answer based on general knowledge about Ankush.';
+    ragContext = '(RAG retrieval failed — use base context to answer)';
   }
 
   // Build the final user message with RAG context injected
-  const userMessageWithContext = `## Retrieved Context from Knowledge Base:\n${ragContext}\n\n## User Question:\n${message}`;
+  const userMessageWithContext = `## Additional Retrieved Context:\n${ragContext}\n\n## User Question:\n${message}`;
   contents.push({ role: 'user', parts: [{ text: userMessageWithContext }] });
 
   const generationConfig = { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 2048 };

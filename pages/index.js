@@ -6,9 +6,9 @@ import remarkGfm from "remark-gfm";
 
 const SUGGESTED_QUESTIONS = [
   "What projects has Ankush worked on?",
-  "What cloud and AI tools does he know?",
   "Show backend scaling projects.",
-  "What is his strongest skill?",
+  "What cloud and AI tools does he know?",
+  "Tell me about his GenAI and RAG work.",
   "Why should we hire Ankush?",
 ];
 
