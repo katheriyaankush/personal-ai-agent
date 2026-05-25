@@ -216,7 +216,7 @@ export default function Home() {
           <div className="login-overlay">
             <div className="login-card">
               <div className="login-profile">
-                <Image src="/profile.jpeg" alt="Ankush Katharia" width={72} height={72} className="login-avatar" />
+                <Image src="/profile.png" alt="Ankush Katharia" width={72} height={72} className="login-avatar" />
                 <h1 className="login-name">Ankush Katharia</h1>
                 <p className="login-role">Full Stack Architect Manager • 10+ Years</p>
                 <div className="login-badges">
@@ -298,7 +298,7 @@ export default function Home() {
                 </svg>
               </button>
               <div className="modal-header">
-                <Image src="/profile.jpeg" alt="Ankush Katharia" width={64} height={64} className="modal-avatar-img" />
+                <Image src="/profile.png" alt="Ankush Katharia" width={64} height={64} className="modal-avatar-img" />
                 <h2>Ankush Katharia</h2>
                 <p className="modal-role">Full Stack Architect Manager</p>
               </div>
@@ -364,7 +364,7 @@ export default function Home() {
           <div className="header-content">
             <div className="logo-section">
               <div className="avatar-ring">
-                <Image src="/profile.jpeg" alt="Ankush Katharia" width={40} height={40} className="avatar-img" />
+                <Image src="/profile.png" alt="Ankush Katharia" width={40} height={40} className="avatar-img" />
               </div>
               <div className="header-info">
                 <h1 className="name">Ankush Katharia</h1>
