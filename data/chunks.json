@@ -1,0 +1,102 @@
+[
+  {
+    "id": "profile-1",
+    "text": "Ankush Katharia is a Full Stack Architect Manager at Tredence Inc. with 10+ years of experience building scalable web applications, enterprise platforms, and cloud-native solutions. He is based in Bangalore, India (living there for 6+ years), originally from Moradabad, Uttar Pradesh. Contact: katheriyaankush@gmail.com, +91 8130935017. LinkedIn: linkedin.com/in/ankushkatharia-738036b1",
+    "metadata": { "category": "profile" }
+  },
+  {
+    "id": "profile-2",
+    "text": "Ankush currently leads a team of 10+ engineers at Tredence Inc., handling projects end-to-end from requirement gathering, converting business needs into technical requirements, architecture design, development, and deployment. He has proven experience leading teams, defining technical roadmaps, and delivering high-impact products across e-commerce, customer experience, telephony, AI/ML, and collaboration domains.",
+    "metadata": { "category": "leadership" }
+  },
+  {
+    "id": "skills-frontend",
+    "text": "Frontend skills: React.js (8+ years expert level), Next.js (4+ years), Redux, MobX, RemixJS, JavaScript/TypeScript (10+ years), HTML5, CSS3, Styled Components, Tailwind CSS. Built enterprise-grade SPAs, SSR apps, and complex state management systems.",
+    "metadata": { "category": "skills" }
+  },
+  {
+    "id": "skills-backend",
+    "text": "Backend skills: Node.js (8+ years expert level), Express.js, Redis, GraphQL, RESTful APIs, WebSockets, Server-Sent Events. Built microservices, REST APIs, GraphQL services, and real-time systems handling millions of requests.",
+    "metadata": { "category": "skills" }
+  },
+  {
+    "id": "skills-database",
+    "text": "Database skills (8+ years): MongoDB, PostgreSQL, MySQL, DynamoDB, Redis (caching and pub/sub). Experience with both SQL and NoSQL databases at scale, schema design, query optimization, and data modeling.",
+    "metadata": { "category": "skills" }
+  },
+  {
+    "id": "skills-cloud",
+    "text": "Cloud and DevOps: AWS (4+ years) including Lambda, S3, DynamoDB, CloudFront, API Gateway, EC2. Google Cloud Platform (2+ years) including Vertex AI, Cloud Functions, BigQuery. Microsoft Azure (2+ years) including Azure Functions, Azure DevOps, Cognitive Services. Docker, CI/CD, Serverless Architecture.",
+    "metadata": { "category": "skills" }
+  },
+  {
+    "id": "skills-ai",
+    "text": "GenAI and AI/ML skills (2+ years): GenAI, Agentic AI, RAG (Retrieval Augmented Generation), Vertex AI, OpenAI APIs, LLM Integration, Prompt Engineering, Vector Databases. Built AI-powered applications including ReefChat for EA Sports and BDD Forge automation tool.",
+    "metadata": { "category": "skills" }
+  },
+  {
+    "id": "skills-leadership",
+    "text": "Team Leadership (5+ years): Currently leading 10+ engineers at Tredence. Previously led teams of 4-5 developers at HCL Tech. Strong problem-solving, performance optimization, stakeholder management. Experience defining technical roadmaps, conducting code reviews, mentoring junior developers into strong engineers.",
+    "metadata": { "category": "leadership" }
+  },
+  {
+    "id": "exp-tredence-reefchat",
+    "text": "Tredence Inc (2025-Present) - Client: EA Sports ReefChat: Architected and developed ReefChat, an AI-powered internal assistant for EA Sports using Next.js, Python, RAG, and GenAI. Built intelligent features for generating images, files, and content for internal teams, improving productivity by 40%. Implemented RAG pipeline for context-aware responses using company knowledge base. Technologies: Next.js, Python, RAG, OpenAI, GenAI, AWS, DynamoDB, Vector DB.",
+    "metadata": { "category": "experience-tredence" }
+  },
+  {
+    "id": "exp-tredence-bdd",
+    "text": "Tredence Inc (2025-Present) - BDD Forge App: Architecting and developing an AI-powered tool using Next.js, Node.js, MongoDB, and GenAI that auto-generates BDD test files from user stories. Integrating Jira and GitHub to streamline BDD file generation, reducing QA effort by 60%. Also implementing Vertex AI for commerce for a major e-commerce client powering intelligent search and recommendations.",
+    "metadata": { "category": "experience-tredence" }
+  },
+  {
+    "id": "exp-hcl-bluejeans",
+    "text": "HCL Tech (2020-2025) - Client: BlueJeans (Verizon): Developed Video Telephony SDK features including Closed Captions (real-time speech-to-text), Video Streaming, Chat Box, Custom Videos, and Voice Features. Built BlueJeans Apps using React.js, Node.js, and MobX serving millions of users globally. Led a team of 5 developers, conducted code reviews, optimized performance by 30%. Technologies: React.js, Node.js, Redis, MobX, AWS Lambda, WebSocket, MongoDB.",
+    "metadata": { "category": "experience-hcl" }
+  },
+  {
+    "id": "exp-hcl-uber",
+    "text": "HCL Tech (2020-2025) - Client: Uber Cabs: Designed and developed an Uber Delivery Application using React, RemixJS, and Shopify APIs to streamline delivery workflows for merchants. Built secure and scalable APIs using Node.js with JWT and OAuth authentication. Improved API performance by 50% using Redis caching and GraphQL. Led a team of 4 developers. Technologies: React, RemixJS, Node.js, Redis, GraphQL, Shopify APIs, Docker.",
+    "metadata": { "category": "experience-hcl" }
+  },
+  {
+    "id": "exp-ola",
+    "text": "Ola Cabs (2020) - Assistant Manager: Designed and implemented an Interactive Voice Response (IVR) system using JavaScript, integrated with telephony APIs to handle 10,000+ daily calls. Developed a user-friendly dashboard using React.js and Node.js for real-time data visualization of call center operations. System was highly scalable with sub-second latency.",
+    "metadata": { "category": "experience-ola" }
+  },
+  {
+    "id": "exp-flipkart",
+    "text": "Flipkart (2019-2020) - Sr. Product Engineer UC: Designed and implemented an IVR system for call center automation serving Flipkart's massive customer base. Built comprehensive real-time dashboard using React.js and Node.js for analytics. Enabled monitoring of call volume, durations, agent performance, optimizing operational efficiency by 25%. Technologies: React.js, Node.js, Redis, JavaScript, RESTful APIs, PostgreSQL.",
+    "metadata": { "category": "experience-flipkart" }
+  },
+  {
+    "id": "exp-ameyo",
+    "text": "Drishti Soft Solutions / Ameyo / Exotel (2015-2019) - Sr. Product Engineer: Designed and developed a comprehensive CRM system using React.js frontend and Node.js backend, deployed across 50+ enterprise clients. Integrated IVR systems with CRM for seamless call flow management. Built the product from ground up, contributing to company's growth from startup to acquisition by Exotel. Technologies: React.js, Node.js, JavaScript, RESTful APIs, PostgreSQL, PHP, WebSocket.",
+    "metadata": { "category": "experience-ameyo" }
+  },
+  {
+    "id": "education",
+    "text": "Education: MCA (Master of Computer Applications) from A.K.G. Engineering College (2012-2015) in Computer Science. BCA (Bachelor of Computer Applications) from Teerthanker Mahaveer University, Moradabad (2009-2012). 12th PCM from Triveni Inter College (2007-2009).",
+    "metadata": { "category": "education" }
+  },
+  {
+    "id": "achievements",
+    "text": "Key achievements: Built AI-powered applications (ReefChat) for enterprise clients like EA Sports improving productivity by 40%. Implemented RAG-based systems for intelligent content generation. Strong knowledge of Agentic AI. Architected scalable microservices handling millions of requests. Contributed to products serving millions of users globally (BlueJeans, Flipkart, Uber). Reduced QA effort by 60% through AI-powered BDD automation. 10+ years of consistent growth from Engineer to Architect Manager.",
+    "metadata": { "category": "achievements" }
+  },
+  {
+    "id": "system-design",
+    "text": "System Design approach: 1) Clarify Requirements — functional and non-functional, scale, constraints. 2) High-Level Design — components, data flow, API design. 3) Deep Dive — database schema, caching strategy, message queues. 4) Scalability — horizontal scaling, load balancing, CDN, sharding. 5) Reliability — fault tolerance, circuit breakers, retry mechanisms, monitoring. 6) Trade-offs — CAP theorem, consistency vs availability, cost optimization.",
+    "metadata": { "category": "system-design" }
+  },
+  {
+    "id": "why-hire",
+    "text": "Why hire Ankush: Rare combination of deep technical expertise AND leadership skills. Can architect systems from scratch AND get hands dirty with code. Experience across diverse domains — adaptable and quick learner. Proven track record at top companies (Flipkart, Ola, Tredence, HCL/Verizon). Forward-thinking — already building with GenAI, RAG, and Agentic AI. Strong communicator who explains complex concepts simply. Team builder who grows engineers and creates high-performing teams.",
+    "metadata": { "category": "why-hire" }
+  },
+  {
+    "id": "personal",
+    "text": "Personal info: Native place is Moradabad, Uttar Pradesh, India. Currently living in Bangalore, Karnataka for 6+ years. Languages: English (Professional), Hindi (Native). Interests: Technology, AI/ML, System Design, Open Source, Mentoring. Available for new opportunities.",
+    "metadata": { "category": "personal" }
+  }
+]
